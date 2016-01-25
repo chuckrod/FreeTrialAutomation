@@ -1,0 +1,28 @@
+Param(
+ [Parameter(Mandatory=$True)]
+ [string]$customerName
+)
+
+Import-Module WebAdministration
+$appPoolName = $customerName
+$dotNetVersion = "v4.0"
+$siteName = $customerName + '.qualtraxcloud.com'
+$siteDirectory = "C:\Test\" + $customerName
+
+cd IIS:\AppPools\
+
+if (!(Test-Path $appPoolName -pathType container))
+{
+    $appPool = New-Item $appPoolName
+    $appPool | Set-ItemProperty -Name "managedRuntimeVersion" -Value $dotNetVersion
+}
+
+cd IIS:\Sites\
+
+if (Test-Path $siteName -pathType container)
+{
+    return
+}
+
+$iisApp = New-Item $iisAppName -bindings @{protocol="http";bindingInformation=":80:" + $iisAppName} -physicalPath $directoryPath
+$iisApp | Set-ItemProperty -Name "applicationPool" -Value $iisAppPoolName
